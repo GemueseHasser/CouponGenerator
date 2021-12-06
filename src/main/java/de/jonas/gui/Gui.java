@@ -1,13 +1,16 @@
 package de.jonas.gui;
 
+import de.jonas.object.Coupon;
 import de.jonas.object.gui.Draw;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 /**
  * <p>Ein {@link Gui} stellt ein Fenster dar, welches dem Nutzer die Grundlage bietet, um die Gutscheine zu
@@ -36,6 +39,7 @@ public final class Gui extends JFrame {
 
 
     //<editor-fold desc="CONSTRUCTORS">
+
     /**
      * <p>Erzeugt eine neue und vollständig unabhängige Instanz eines {@link Gui}. Ein {@link Gui} stellt ein Fenster
      * dar, welches dem Nutzer die Grundlage bietet, um die Gutscheine zu generieren. Mit dieser grafischen Oberfläche
@@ -62,6 +66,8 @@ public final class Gui extends JFrame {
         final JTextField[] fields = new JTextField[7];
 
         for (int i = 0; i < fields.length; i++) {
+            if (i == 3) continue;
+
             fields[i] = new JTextField();
 
             if (i == 4 || i == 5) {
@@ -86,6 +92,33 @@ public final class Gui extends JFrame {
         generate.setOpaque(true);
         generate.setBackground(Color.BLACK);
         generate.setForeground(Color.WHITE);
+        generate.addActionListener(actionEvent -> {
+            // check if all fields are correct
+            if (Arrays.stream(fields).anyMatch(field -> field != null && field.getText().trim().equalsIgnoreCase(""))) {
+                showError();
+                return;
+            }
+
+            for (int i = 4; i < fields.length; i++) {
+                if (!fields[i].getText().matches("[0-9]+")) {
+                    showError();
+                    return;
+                }
+            }
+
+            // create coupon
+            final Coupon coupon = new Coupon(
+                fields[0].getText(),
+                fields[1].getText(),
+                fields[2].getText(),
+                Integer.parseInt(fields[4].getText()),
+                Integer.parseInt(fields[5].getText()),
+                Integer.parseInt(fields[6].getText())
+            );
+
+            // generate coupons
+            coupon.generate();
+        });
 
         super.add(generate);
         super.add(draw);
@@ -98,6 +131,19 @@ public final class Gui extends JFrame {
      */
     public void open() {
         super.setVisible(true);
+    }
+
+    /**
+     * Zeigt dem Nutzer einen Error an und fordert ihn auf alle Felder korrekt auszufüllen.
+     */
+    private void showError() {
+        JOptionPane.showConfirmDialog(
+            null,
+            "Bitte fülle alle Felder korrekt aus!",
+            "Fehler",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
 }
