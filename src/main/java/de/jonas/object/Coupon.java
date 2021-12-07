@@ -1,6 +1,21 @@
 package de.jonas.object;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * Ein {@link Coupon} stellt eine Ansammlung an Gutscheinen dar, welche man zu einem PDF-Dokument migrieren kann, bzw .
@@ -28,7 +43,54 @@ public final class Coupon {
     /**
      * Generiert dieses Gutschein, sodass man ihn abspeichern kann, in Form eines PDF-Dokuments.
      */
+    @SneakyThrows
     public void generate() {
+        final Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(getCustomFile()));
+
+        document.open();
+
+        final Font font = FontFactory.getFont(FontFactory.COURIER, 20, BaseColor.BLACK);
+        final Chunk chunk = new Chunk("Test-Chunk", font);
+
+        document.add(chunk);
+        document.close();
+    }
+
+    /**
+     * Öffnet dem Nutzer ein Menü, worin er einen bestimmten Speicherort auswählen kann, unter dem er das generierte
+     * PDF-Dokument speichern möchte. Dieser gewählte Pfad, wird dann als {@link File} zurückgegeben.
+     *
+     * @return Der ausgewählte Speicherort des Nutzers für das generierte PDF-Dokument.
+     */
+    @NotNull
+    private File getCustomFile() {
+        // create file chooser based on home directory
+        final JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        chooser.setDialogTitle("Speichern unter...");
+
+        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Portable Document Format (PDF)",
+            "pdf"
+        );
+
+        // customize file filters
+        chooser.removeChoosableFileFilter(chooser.getAcceptAllFileFilter());
+        chooser.addChoosableFileFilter(filter);
+
+        // choose file
+        final int result = chooser.showSaveDialog(null);
+
+        // if chosen file is invalid return home directory
+        if (result != JFileChooser.APPROVE_OPTION) return FileSystemView.getFileSystemView().getHomeDirectory();
+
+        // get chosen file
+        final File chosen = chooser.getSelectedFile();
+
+        // if chosen file format is invalid return home directory
+        if (!filter.accept(chosen)) return FileSystemView.getFileSystemView().getHomeDirectory();
+
+        return chosen;
     }
 
 }
