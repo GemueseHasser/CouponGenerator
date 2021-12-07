@@ -30,6 +30,27 @@ public final class Coupon {
     //<editor-fold desc="CONSTANTS">
     /** Der Abstand zu der oberen Kante des Dokuments, ab dem die Gutscheine beginnen. */
     private static final int SPACING_BEFORE_COUPONS = 50;
+    /** Die Schriftart für die Überschrift eines jeden Gutscheins. */
+    private static final Font COUPON_HEADING_FONT = FontFactory.getFont(
+        FontFactory.COURIER_BOLD,
+        20,
+        Font.UNDERLINE,
+        BaseColor.BLACK
+    );
+    /** Die standard Schriftart für einen jeden Gutschein. */
+    private static final Font COUPON_DEFAULT_FONT = FontFactory.getFont(FontFactory.COURIER, 15, BaseColor.BLACK);
+    /** Die Schriftart für den Grund des Gutscheins. */
+    private static final Font COUPON_REASON_FONT = FontFactory.getFont(
+        FontFactory.TIMES_BOLDITALIC,
+        17,
+        BaseColor.BLACK
+    );
+    /** Die Schriftart für den Ersteller des Gutscheins. */
+    private static final Font COUPON_CREATOR_FONT = FontFactory.getFont(
+        FontFactory.TIMES_ITALIC,
+        15,
+        BaseColor.DARK_GRAY
+    );
     //</editor-fold>
 
 
@@ -94,7 +115,28 @@ public final class Coupon {
      * @return Der Gutschein in Form einer {@link PdfPCell}, welcher {@code amount} mal auf dem Dokument erscheint.
      */
     private PdfPCell getCouponCell() {
-        final Paragraph text = new Paragraph("Test");
+        final Paragraph text = new Paragraph();
+
+        text.setFont(COUPON_HEADING_FONT);
+        text.add("Gutschein");
+
+        text.add("\n\n");
+
+        text.setFont(COUPON_DEFAULT_FONT);
+        text.add("für " + this.recipient);
+
+        text.add("\n\n\n");
+
+        text.add("für ");
+        text.setFont(COUPON_REASON_FONT);
+        text.add(this.reason);
+
+        text.add("\n\n\n\n\n");
+
+        text.setFont(COUPON_DEFAULT_FONT);
+        text.add("von ");
+        text.setFont(COUPON_CREATOR_FONT);
+        text.add(this.creator);
 
         final PdfPCell cell = new PdfPCell(text);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
