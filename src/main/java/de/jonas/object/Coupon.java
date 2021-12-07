@@ -1,10 +1,11 @@
 package de.jonas.object;
 
 import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -50,10 +51,11 @@ public final class Coupon {
 
         document.open();
 
-        final Font font = FontFactory.getFont(FontFactory.COURIER, 20, BaseColor.BLACK);
-        final Chunk chunk = new Chunk("Test-Chunk", font);
+        final Font font = FontFactory.getFont(FontFactory.COURIER, 18, Font.UNDERLINE, BaseColor.BLACK);
+        final Paragraph paragraph = new Paragraph("Gutscheine - by Jonas", font);
+        paragraph.setAlignment(Element.ALIGN_CENTER);
 
-        document.add(chunk);
+        document.add(paragraph);
         document.close();
     }
 
@@ -81,14 +83,19 @@ public final class Coupon {
         // choose file
         final int result = chooser.showSaveDialog(null);
 
+        final File defaultFile = FileSystemView.getFileSystemView().createFileObject(
+            FileSystemView.getFileSystemView().getHomeDirectory(),
+            "generated.pdf"
+        );
+
         // if chosen file is invalid return home directory
-        if (result != JFileChooser.APPROVE_OPTION) return FileSystemView.getFileSystemView().getHomeDirectory();
+        if (result != JFileChooser.APPROVE_OPTION) return defaultFile;
 
         // get chosen file
-        final File chosen = chooser.getSelectedFile();
+        final File chosen = new File(chooser.getSelectedFile().getAbsolutePath() + ".pdf");
 
         // if chosen file format is invalid return home directory
-        if (!filter.accept(chosen)) return FileSystemView.getFileSystemView().getHomeDirectory();
+        if (!filter.accept(chosen)) return defaultFile;
 
         return chosen;
     }
