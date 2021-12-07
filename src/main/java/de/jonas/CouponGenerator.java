@@ -1,6 +1,6 @@
 package de.jonas;
 
-import de.jonas.gui.Gui;
+import de.jonas.object.Coupon;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,8 +18,16 @@ public final class CouponGenerator {
      * @param args Die Argumente, die von der JRE übergeben werden.
      */
     public static void main(@NotNull final String @NotNull [] args) {
-        final Gui gui = new Gui();
-        gui.open();
+        final Coupon coupon = new Coupon(
+            "Jonas",
+            "Test-Gutschein",
+            "Jonas",
+            150,
+            200,
+            5
+        );
+
+        coupon.generate();
     }
     //</editor-fold>
 

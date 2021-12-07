@@ -6,6 +6,8 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -24,6 +26,12 @@ import java.io.FileOutputStream;
  */
 @RequiredArgsConstructor
 public final class Coupon {
+
+    //<editor-fold desc="CONSTANTS">
+    /** Der Abstand zu der oberen Kante des Dokuments, ab dem die Gutscheine beginnen. */
+    private static final int SPACING_BEFORE_COUPONS = 50;
+    //</editor-fold>
+
 
     //<editor-fold desc="LOCAL FIELDS">
     /** Der Empfänger der Gutscheine. */
@@ -46,17 +54,53 @@ public final class Coupon {
      */
     @SneakyThrows
     public void generate() {
+        // create pdf document
         final Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(getCustomFile()));
 
+        // open pdf document for editing
         document.open();
 
+        // write heading
         final Font font = FontFactory.getFont(FontFactory.COURIER, 18, Font.UNDERLINE, BaseColor.BLACK);
         final Paragraph paragraph = new Paragraph("Gutscheine - by Jonas", font);
         paragraph.setAlignment(Element.ALIGN_CENTER);
 
+        // create coupons
+        final int columns = (int) (document.getPageSize().getWidth() / this.width);
+        final PdfPTable coupons = new PdfPTable(columns);
+        coupons.setSpacingBefore(SPACING_BEFORE_COUPONS);
+
+        // add all coupons to table
+        for (int i = 1; i < this.amount + 1; i++) {
+            coupons.addCell(getCouponCell());
+        }
+
+        // complete last table row
+        coupons.completeRow();
+
+        // add objects
         document.add(paragraph);
+        document.add(coupons);
+
+        // close pdf document
         document.close();
+    }
+
+    /**
+     * Der Gutschein wird in Form einer {@link PdfPCell} erstellt, welcher dann {@code amount} mal auf dem Dokument
+     * erscheint.
+     *
+     * @return Der Gutschein in Form einer {@link PdfPCell}, welcher {@code amount} mal auf dem Dokument erscheint.
+     */
+    private PdfPCell getCouponCell() {
+        final Paragraph text = new Paragraph("Test");
+
+        final PdfPCell cell = new PdfPCell(text);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setMinimumHeight(this.height);
+
+        return cell;
     }
 
     /**
@@ -97,6 +141,7 @@ public final class Coupon {
         // if chosen file format is invalid return home directory
         if (!filter.accept(chosen)) return defaultFile;
 
+        // return chosen file
         return chosen;
     }
 
