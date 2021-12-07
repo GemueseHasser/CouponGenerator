@@ -95,15 +95,23 @@ public final class Gui extends JFrame {
         generate.addActionListener(actionEvent -> {
             // check if all fields are correct
             if (Arrays.stream(fields).anyMatch(field -> field != null && field.getText().trim().equalsIgnoreCase(""))) {
-                showError();
+                showError("Bitte fülle alle Felder korrekt aus!");
                 return;
             }
 
             for (int i = 4; i < fields.length; i++) {
                 if (!fields[i].getText().matches("[0-9]+")) {
-                    showError();
+                    showError("Bitte fülle alle Felder korrekt aus!");
                     return;
                 }
+            }
+
+            final int width = Integer.parseInt(fields[4].getText());
+            final int height = Integer.parseInt(fields[5].getText());
+
+            if (width > 595 || height > 842) {
+                showError("maximal erlaubte Maße: 595 x 842");
+                return;
             }
 
             // create coupon
@@ -111,8 +119,8 @@ public final class Gui extends JFrame {
                 fields[0].getText(),
                 fields[1].getText(),
                 fields[2].getText(),
-                Integer.parseInt(fields[4].getText()),
-                Integer.parseInt(fields[5].getText()),
+                width,
+                height,
                 Integer.parseInt(fields[6].getText())
             );
 
@@ -136,10 +144,10 @@ public final class Gui extends JFrame {
     /**
      * Zeigt dem Nutzer einen Error an und fordert ihn auf alle Felder korrekt auszufüllen.
      */
-    private void showError() {
+    private void showError(@NotNull final String error) {
         JOptionPane.showConfirmDialog(
             null,
-            "Bitte fülle alle Felder korrekt aus!",
+            error,
             "Fehler",
             JOptionPane.DEFAULT_OPTION,
             JOptionPane.INFORMATION_MESSAGE
