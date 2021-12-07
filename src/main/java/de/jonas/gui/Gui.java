@@ -5,11 +5,13 @@ import de.jonas.object.gui.Draw;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.util.Arrays;
 
 /**
@@ -35,6 +37,19 @@ public final class Gui extends JFrame {
     private static final int GENERATE_BUTTON_WIDTH = 200;
     /** Die Höhe des Buttons, womit man die Gutscheine generieren kann. */
     private static final int GENERATE_BUTTON_HEIGHT = 40;
+    /** Die Breite der Box, womit man die Skalierung der Gutscheine wählen kann. */
+    private static final int COUPON_SCALE_BOX_WIDTH = 70;
+    /** Die Höhe der Box, womit man die Skalierung der Gutscheine wählen kann. */
+    private static final int COUPON_SCALE_BOX_HEIGHT = 35;
+    /** Alle wählbaren Skalierungen des Gutscheins. */
+    private static final Integer[] COUPON_SCALES = {
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+    };
     //</editor-fold>
 
 
@@ -49,6 +64,7 @@ public final class Gui extends JFrame {
      */
     @SuppressWarnings("checkstyle:MagicNumber")
     public Gui() {
+        // set default properties
         super.setTitle(TITLE);
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setBounds(0, 0, WIDTH, HEIGHT);
@@ -56,15 +72,19 @@ public final class Gui extends JFrame {
         super.setResizable(false);
         super.setLayout(null);
 
+        // create draw object
         final Draw draw = new Draw(TITLE);
         draw.setBounds(0, 0, WIDTH, HEIGHT);
         draw.setVisible(true);
 
+        // get values from draw object
         final int x = draw.getObjectX();
         final int size = Draw.DEFAULT_FONT_SIZE;
 
+        // create text fields
         final JTextField[] fields = new JTextField[7];
 
+        // place all text fields
         for (int i = 0; i < fields.length; i++) {
             if (i == 3) continue;
 
@@ -80,18 +100,27 @@ public final class Gui extends JFrame {
             super.add(fields[i]);
         }
 
+        // create check box for scaling factor
+        final JComboBox<Integer> scaleBox = new JComboBox<>(COUPON_SCALES);
+        scaleBox.setBounds(
+            x,
+            Draw.getObjectY(fields.length - 1) + 7,
+            COUPON_SCALE_BOX_WIDTH,
+            COUPON_SCALE_BOX_HEIGHT
+        );
+        addProperties(scaleBox, Color.LIGHT_GRAY, Color.BLACK);
+
+        // create button to generate pdf file
         final JButton generate = new JButton("PDF generieren");
         generate.setBounds(
-            (WIDTH / 2) - (GENERATE_BUTTON_WIDTH / 2) - 10,
-            Draw.getObjectY(fields.length - 1) + 7,
+            (WIDTH / 2) - (GENERATE_BUTTON_WIDTH / 2) - 7,
+            (int) (HEIGHT - Draw.INNER_RECT_MARGIN + (0.1 * GENERATE_BUTTON_HEIGHT)),
             GENERATE_BUTTON_WIDTH,
             GENERATE_BUTTON_HEIGHT
         );
-        generate.setFocusable(false);
-        generate.setFont(Draw.DEFAULT_FONT);
-        generate.setOpaque(true);
-        generate.setBackground(Color.BLACK);
-        generate.setForeground(Color.WHITE);
+        addProperties(generate, Color.BLACK, Color.WHITE);
+
+        // add action listener to handle action
         generate.addActionListener(actionEvent -> {
             // check if all fields are correct
             if (Arrays.stream(fields).anyMatch(field -> field != null && field.getText().trim().equalsIgnoreCase(""))) {
@@ -121,13 +150,15 @@ public final class Gui extends JFrame {
                 fields[2].getText(),
                 width,
                 height,
-                Integer.parseInt(fields[6].getText())
+                Integer.parseInt(fields[6].getText()),
+                scaleBox.getSelectedIndex()
             );
 
             // generate coupons
             coupon.generate();
         });
 
+        super.add(scaleBox);
         super.add(generate);
         super.add(draw);
     }
@@ -152,6 +183,17 @@ public final class Gui extends JFrame {
             JOptionPane.DEFAULT_OPTION,
             JOptionPane.INFORMATION_MESSAGE
         );
+    }
+
+    private void addProperties(
+        @NotNull final Component component,
+        @NotNull final Color background,
+        @NotNull final Color foreground
+    ) {
+        component.setFocusable(false);
+        component.setFont(Draw.DEFAULT_FONT);
+        component.setBackground(background);
+        component.setForeground(foreground);
     }
 
 }

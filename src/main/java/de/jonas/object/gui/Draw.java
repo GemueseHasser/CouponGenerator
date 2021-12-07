@@ -28,7 +28,7 @@ public final class Draw extends JLabel {
     @NotNull
     public static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, DEFAULT_FONT_SIZE);
     /** Der Abstand zu den äußeren Rändern des Fensters, den das innere Rechteck haben soll. */
-    private static final int INNER_RECT_MARGIN = 100;
+    public static final int INNER_RECT_MARGIN = 100;
     /** Die Schriftart, mit der die Überschrift geschrieben wird. */
     @NotNull
     private static final Font HEADING_FONT = new Font("Arial", Font.BOLD, 30);
@@ -49,6 +49,7 @@ public final class Draw extends JLabel {
         "",
         "Größe:",
         "Anzahl",
+        "Skalierung:",
     };
     //</editor-fold>
 

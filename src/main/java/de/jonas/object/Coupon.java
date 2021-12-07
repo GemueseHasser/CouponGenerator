@@ -9,9 +9,9 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -21,10 +21,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 /**
- * Ein {@link Coupon} stellt eine Ansammlung an Gutscheinen dar, welche man zu einem PDF-Dokument migrieren kann, bzw .
- * woraus man ein PDF-Dokument generieren kann.
+ * Ein {@link Coupon} stellt eine Ansammlung an Gutscheinen dar, welche man zu einem PDF-Dokument migrieren kann, bzw.
+ * woraus man ein PDF-Dokument generieren kann. Dieses PDF-Dokument kann dann an einer beliebig wählbaren Position
+ * gespeichert werden. Alle Eigenschaften des Gutscheins sind völlig variabel konfigurierbar, jedoch darf die Breite und
+ * die Höhe eines Gutscheins nicht die Breite und Höhe eines Blattes überschreiten.
  */
-@RequiredArgsConstructor
 public final class Coupon {
 
     //<editor-fold desc="CONSTANTS">
@@ -72,6 +73,48 @@ public final class Coupon {
     /** Die Anzahl an Gutscheinen. */
     private final int amount;
     //</editor-fold>
+
+
+    /**
+     * Erzeugt eine neue und vollständig unabhängige Instanz eines {@link Coupon Gutscheins}. Ein {@link Coupon} stellt
+     * eine Ansammlung an Gutscheinen dar, welche man zu einem PDF-Dokument migrieren kann, bzw. woraus man ein
+     * PDF-Dokument generieren kann. Dieses PDF-Dokument kann dann an einer beliebig wählbaren Position gespeichert
+     * werden. Alle Eigenschaften des Gutscheins sind völlig variabel konfigurierbar, jedoch darf die Breite und die
+     * Höhe eines Gutscheins nicht die Breite und Höhe eines Blattes überschreiten.
+     *
+     * @param recipient Der Empfänger der Gutscheine.
+     * @param reason    Der Anlass für die Gutscheine.
+     * @param creator   Der Ersteller der Gutscheine.
+     * @param width     Die Breite eines Gutscheins.
+     * @param height    Die Höhe eines Gutscheins.
+     * @param amount    Die Anzahl an Gutscheinen.
+     * @param scaling   Die Skalierung des Gutscheins.
+     */
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public Coupon(
+        @NotNull final String recipient,
+        @NotNull final String reason,
+        @NotNull final String creator,
+        @Range(from = 0, to = 400) final int width,
+        @Range(from = 0, to = 700) final int height,
+        @Range(from = 0, to = Integer.MAX_VALUE) final int amount,
+        @Range(from = 0, to = Integer.MAX_VALUE) final int scaling
+    ) {
+        this.recipient = recipient;
+        this.reason = reason;
+        this.creator = creator;
+        this.width = width;
+        this.height = height;
+        this.amount = amount;
+
+        // set scaling
+        final float finallyScaling = (float) ((scaling == 1) ? 1 : (1 + (0.1 * scaling)));
+
+        COUPON_HEADING_FONT.setSize(COUPON_HEADING_FONT.getSize() * finallyScaling);
+        COUPON_DEFAULT_FONT.setSize(COUPON_DEFAULT_FONT.getSize() * finallyScaling);
+        COUPON_REASON_FONT.setSize(COUPON_REASON_FONT.getSize() * finallyScaling);
+        COUPON_CREATOR_FONT.setSize(COUPON_CREATOR_FONT.getSize() * finallyScaling);
+    }
 
 
     /**
