@@ -32,6 +32,11 @@
       <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="iText" />
+      <option name="name" value="iText" />
+      <option name="url" value="https://mvnrepository.com/artifact/com.itextpdf/itext7-core" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="Lombok" />
       <option name="name" value="Lombok" />
       <option name="url" value="https://mvnrepository.com/artifact/org.projectlombok/lombok" />

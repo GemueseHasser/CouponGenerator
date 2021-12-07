@@ -28,6 +28,10 @@ import java.io.FileOutputStream;
 public final class Coupon {
 
     //<editor-fold desc="CONSTANTS">
+    /** Die maximale Breite eines Gutscheins. */
+    public static final int MAX_WIDTH = 400;
+    /** Die maximale Höhe eines Gutscheins. */
+    public static final int MAX_HEIGHT = 700;
     /** Der Abstand zu der oberen Kante des Dokuments, ab dem die Gutscheine beginnen. */
     private static final int SPACING_BEFORE_COUPONS = 50;
     /** Die Schriftart für die Überschrift eines jeden Gutscheins. */

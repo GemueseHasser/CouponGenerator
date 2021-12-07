@@ -109,8 +109,8 @@ public final class Gui extends JFrame {
             final int width = Integer.parseInt(fields[4].getText());
             final int height = Integer.parseInt(fields[5].getText());
 
-            if (width > 595 || height > 842) {
-                showError("maximal erlaubte Maße: 595 x 842");
+            if (width > Coupon.MAX_WIDTH || height > Coupon.MAX_HEIGHT) {
+                showError("maximal erlaubte Maße: " + Coupon.MAX_WIDTH + " x " + Coupon.MAX_HEIGHT);
                 return;
             }
 
