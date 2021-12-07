@@ -72,6 +72,8 @@ public final class Coupon {
     private final int height;
     /** Die Anzahl an Gutscheinen. */
     private final int amount;
+    /** Die Skalierung des Gutscheins. */
+    private final int scaling;
     //</editor-fold>
 
 
@@ -106,6 +108,7 @@ public final class Coupon {
         this.width = width;
         this.height = height;
         this.amount = amount;
+        this.scaling = scaling;
 
         // set scaling
         final float finallyScaling = (float) ((scaling == 1) ? 1 : (1 + (0.1 * scaling)));
@@ -167,18 +170,30 @@ public final class Coupon {
         text.setFont(COUPON_HEADING_FONT);
         text.add("Gutschein");
 
+        text.setFont(COUPON_DEFAULT_FONT);
         text.add("\n\n");
 
-        text.setFont(COUPON_DEFAULT_FONT);
+        for (int i = 0; i < this.scaling; i++) {
+            text.add("\n");
+        }
+
         text.add("für " + this.recipient);
 
-        text.add("\n\n\n");
+        text.add("\n\n");
+
+        for (int i = 0; i < this.scaling; i++) {
+            text.add("\n");
+        }
 
         text.add("für ");
         text.setFont(COUPON_REASON_FONT);
         text.add(this.reason);
 
-        text.add("\n\n\n\n\n");
+        text.add("\n\n\n\n");
+
+        for (int i = 0; i < this.scaling; i++) {
+            text.add("\n");
+        }
 
         text.setFont(COUPON_DEFAULT_FONT);
         text.add("von ");
